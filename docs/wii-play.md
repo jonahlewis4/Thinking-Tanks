@@ -20,3 +20,4 @@ the game does not load the new level until you win, so if you change the level n
 6344 bytes between enemy tanks
 
 0x91CFAB8B = number of remaining enemies
+    The game tracks this number. If it reaches 0, the level is won.
