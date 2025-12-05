@@ -2,7 +2,6 @@ import asyncio
 import json
 from typing import TypedDict
 import websockets
-from websockets.server import WebSocketServerProtocol
 
 
 class CounterMessage(TypedDict):
@@ -10,8 +9,7 @@ class CounterMessage(TypedDict):
     counter: int
     timestamp: float
 
-
-async def counter_handler(websocket: WebSocketServerProtocol) -> None:
+async def counter_handler(websocket) -> None:
     """Handle WebSocket connection and send incrementing counter"""
     print(f"Client connected: {websocket.remote_address}")
 
@@ -36,7 +34,6 @@ async def counter_handler(websocket: WebSocketServerProtocol) -> None:
     except websockets.exceptions.ConnectionClosed:
         print(f"Client disconnected: {websocket.remote_address}")
 
-
 async def main() -> None:
     """Start WebSocket server"""
     host: str = "localhost"
@@ -46,7 +43,6 @@ async def main() -> None:
 
     async with websockets.serve(counter_handler, host, port):
         await asyncio.Future()  # Run forever
-
 
 if __name__ == "__main__":
     asyncio.run(main())
