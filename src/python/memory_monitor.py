@@ -37,6 +37,8 @@ class DolphinMemoryMonitor:
 
     def _ensure_hook(self):
         """Fail immediately if we can't hook Dolphin."""
+        if(self._api.is_hooked()):
+            return
         if not self._api.hook():
             raise MemoryHookError("Failed to hook Dolphin memory engine")
 
