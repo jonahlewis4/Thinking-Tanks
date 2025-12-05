@@ -69,26 +69,30 @@ function createWindow() {
     });
 }
 
-app.whenReady().then(() => {
+
+const startApp = () => {
     startPython();
-    setTimeout(() => {
-        createWindow();
-    }, 1000);
+    createWindow();
+};
+
+app.whenReady().then(() => {
+    startApp();
 });
 
-app.on("window-all-closed", () => {
+const closePythonIfOpen = () => {
     if (pyProcess) {
         pyProcess.kill("SIGTERM");
         pyProcess = null;
     }
+}
+
+app.on("window-all-closed", () => {
+    closePythonIfOpen();
     if (process.platform !== "darwin") {
         app.quit();
     }
 });
 
 app.on("will-quit", () => {
-    if (pyProcess) {
-        pyProcess.kill("SIGTERM");
-        pyProcess = null;
-    }
+    closePythonIfOpen();
 });
