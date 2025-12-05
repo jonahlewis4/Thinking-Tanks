@@ -10,20 +10,35 @@ const __dirname = path.dirname(__filename);
 
 function startPython() {
     const pythonScript = path.join(__dirname, "..", "..", "python", "backend.py");
+    const venvPython = path.join(__dirname, "..", "..", "python", "venv", "bin", "python3");
 
-    pyProcess = spawn("python3", [pythonScript]);
+    console.log("Python script path:", pythonScript);
+    console.log("Python executable:", venvPython);
 
-    pyProcess.stdout.on("data", (data) => {
-        console.log(`PYTHON: ${data.toString().trim()}`);
-    });
+    try {
+        pyProcess = spawn(venvPython, [pythonScript], {
+            stdio: ['pipe', 'pipe', 'pipe']
+        });
 
-    pyProcess.stderr.on("data", (data) => {
-        console.error(`PY ERR: ${data.toString()}`);
-    });
+        pyProcess.stdout.on("data", (data) => {
+            console.log(`PYTHON: ${data.toString().trim()}`);
+        });
 
-    pyProcess.on("close", (code) => {
-        console.log(`Python backend exited with code ${code}`);
-    });
+        pyProcess.stderr.on("data", (data) => {
+            console.error(`PY ERR: ${data.toString()}`);
+        });
+
+        pyProcess.on("error", (error) => {
+            console.error("Failed to start Python process:", error);
+        });
+
+        pyProcess.on("close", (code, signal) => {
+            console.log(`Python backend exited with code ${code}, signal ${signal}`);
+            pyProcess = null;
+        });
+    } catch (error) {
+        console.error("Error spawning Python process:", error);
+    }
 }
 
 function createWindow() {
@@ -31,6 +46,8 @@ function createWindow() {
         width: 800,
         height: 600,
         webPreferences: {
+            nodeIntegration: false,
+            contextIsolation: true,
             preload: path.join(__dirname, "preload.js")
         }
     });
@@ -44,8 +61,18 @@ app.whenReady().then(() => {
 });
 
 app.on("window-all-closed", () => {
+    if (pyProcess) {
+        pyProcess.kill("SIGTERM");
+        pyProcess = null;
+    }
     if (process.platform !== "darwin") {
-        pyProcess?.kill("SIGINT");
         app.quit();
+    }
+});
+
+app.on("before-quit", () => {
+    if (pyProcess) {
+        pyProcess.kill("SIGTERM");
+        pyProcess = null;
     }
 });

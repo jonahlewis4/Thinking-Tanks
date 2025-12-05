@@ -2,10 +2,128 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Hello Electron + Python + TypeScript</title>
+    <title>WebSocket Counter</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 50px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        .counter {
+            font-size: 120px;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .label {
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            opacity: 0.9;
+        }
+        .timestamp {
+            font-size: 16px;
+            margin-top: 20px;
+            opacity: 0.7;
+            font-family: 'Courier New', monospace;
+        }
+        .status {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status.connected {
+            background: #4ade80;
+            box-shadow: 0 0 10px #4ade80;
+        }
+        .status.disconnected {
+            background: #ef4444;
+        }
+        .connection-info {
+            margin-top: 30px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello from Electron (TypeScript)!</h1>
-    <p>Check the terminal — Python backend should be running.</p>
+<div class="container">
+    <div class="label">Counter</div>
+    <div class="counter" id="counter">-</div>
+    <div class="timestamp" id="timestamp">Waiting for data...</div>
+    <div class="connection-info">
+        <span class="status" id="status"></span>
+        <span id="statusText">Connecting...</span>
+    </div>
+</div>
+
+<script>
+    const counterEl = document.getElementById('counter');
+    const timestampEl = document.getElementById('timestamp');
+    const statusEl = document.getElementById('status');
+    const statusTextEl = document.getElementById('statusText');
+
+    let ws;
+
+    function connect() {
+        ws = new WebSocket('ws://localhost:8765');
+
+        ws.onopen = () => {
+            console.log('WebSocket connected');
+            statusEl.className = 'status connected';
+            statusTextEl.textContent = 'Connected';
+        };
+
+        ws.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+
+                // Update counter
+                counterEl.textContent = data.counter;
+
+                // Update timestamp
+                const date = new Date(data.timestamp * 1000);
+                timestampEl.textContent = date.toLocaleTimeString();
+
+                console.log('Received:', data);
+            } catch (error) {
+                console.error('Error parsing message:', error);
+            }
+        };
+
+        ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+            statusEl.className = 'status disconnected';
+            statusTextEl.textContent = 'Error';
+        };
+
+        ws.onclose = () => {
+            console.log('WebSocket disconnected');
+            statusEl.className = 'status disconnected';
+            statusTextEl.textContent = 'Disconnected - Reconnecting...';
+
+            // Attempt to reconnect after 2 seconds
+            setTimeout(connect, 2000);
+        };
+    }
+
+    // Initial connection
+    connect();
+</script>
 </body>
 </html>
