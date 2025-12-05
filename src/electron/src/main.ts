@@ -16,7 +16,7 @@ const isDev = process.env["NODE_ENV"] === 'development';
 function startPython() {
     const projectRoot = path.join(__dirname, "..", "..");
     const pythonScript = path.join(projectRoot, "python", "backend.py");
-    const venvPython = path.join(projectRoot, "venv", "bin", "python3");
+    const venvPython = path.join(projectRoot, "python", "venv", "bin", "python3");
 
     console.log("Python script path:", pythonScript);
     console.log("Python executable:", venvPython);
