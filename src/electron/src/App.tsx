@@ -1,9 +1,10 @@
 // src/App.tsx
 
-import Counter from "./components/Counter.tsx";
+
+import GameStateDisplay from "./components/GameStateDisplay.tsx";
 
 const App = () => {
-    return <Counter/>;
+    return <GameStateDisplay/>;
 };
 
 export default App;

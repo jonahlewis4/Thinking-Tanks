@@ -26,7 +26,7 @@ async def broadcast_game_state():
     """Periodically send game state to all clients."""
     while True:
         # Refresh game state from Dolphin
-        state : GameState = await monitor.refresh()
+        state : GameState = monitor.refresh()
 
         # Convert to JSON
         data = state.jsonify()

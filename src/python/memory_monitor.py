@@ -1,38 +1,46 @@
-import asyncio
 import json
-
 
 class GameState:
     lives: int
-    def __init__(self, lives: int):
-        self.lives = lives
+    error: str = None
 
-    def jsonify (self) -> str:
+    def __init__(self, lives: int = 0, error: str = None):
+        self.lives = lives
+        self.error = error
+
+    def jsonify(self) -> str:
         return json.dumps({
             "lives": self.lives,
-            # add more fields here later
+            "error": self.error
         })
+
+
+class MemoryHookError(Exception):
+    """Raised when Dolphin memory hook fails."""
+    pass
 
 
 class DolphinMemoryMonitor:
     def __init__(self):
-        import dolphin_memory_engine as dme   # imported here intentionally
+        import dolphin_memory_engine as dme  # imported here intentionally
         self._api = dme
         self._lives_address = 0x91D281FF
 
-    # expose only what you want:
-    async def refresh(self):
-        await self._ensure_hook()
-        return GameState(
-            lives=self._api.read_byte(self._lives_address)
-        )
+    def refresh(self) -> GameState:
+        """Return current game state or error if reading fails."""
+        try:
+            self._ensure_hook()
+            lives = self._api.read_byte(self._lives_address)
+            return GameState(lives=lives)
+        except Exception as e:
+            return GameState(error=str(e))
 
-    async def _ensure_hook(self):
-        while not self._api.is_hooked():
-            if not self._api.hook():
-                print("Hook failed, retrying in 2s...")
-                await asyncio.sleep(2)
+    def _ensure_hook(self):
+        """Fail immediately if we can't hook Dolphin."""
+        if not self._api.hook():
+            raise MemoryHookError("Failed to hook Dolphin memory engine")
 
     def cleanup(self):
+        """Unhook memory engine if hooked."""
         if self._api.is_hooked():
             self._api.un_hook()
