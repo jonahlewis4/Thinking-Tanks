@@ -38,6 +38,7 @@ async def broadcast_game_state():
             for ws in list(connected_clients):
                 try:
                     await ws.send(data)
+                    print(f"Sent game state to {ws.remote_address}")
                 except websockets.ConnectionClosed:
                     connected_clients.remove(ws)
                     disconnected.add(ws)
