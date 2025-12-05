@@ -1,10 +1,17 @@
 import asyncio
-from dataclasses import dataclass
+import json
 
 
-@dataclass
 class GameState:
-    lives: int = 0
+    lives: int
+    def __init__(self, lives: int):
+        self.lives = lives
+
+    def jsonify (self) -> str:
+        return json.dumps({
+            "lives": self.lives,
+            # add more fields here later
+        })
 
 
 class DolphinMemoryMonitor:
@@ -23,8 +30,8 @@ class DolphinMemoryMonitor:
     async def _ensure_hook(self):
         while not self._api.is_hooked():
             if not self._api.hook():
-                print("Hook failed, retrying in 100ms...")
-                await asyncio.sleep(0.1)
+                print("Hook failed, retrying in 2s...")
+                await asyncio.sleep(2)
 
     def cleanup(self):
         if self._api.is_hooked():
