@@ -19,5 +19,6 @@ the game does not load the new level until you win, so if you change the level n
 0x91D027E4 = enemy 4 poisition y (float)
 6344 bytes between enemy tanks
 
+0x91D27EFF = number of enemies at start of level load
 0x91CFAB8B = number of remaining enemies
     The game tracks this number. If it reaches 0, the level is won.
