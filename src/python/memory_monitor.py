@@ -12,6 +12,8 @@ class Player(Tank):
 
 @dataclass
 class Enemy(Tank):
+    color: int = 2
+    alive : bool = False
     pass
 
 @dataclass
@@ -49,6 +51,8 @@ class DolphinMemoryMonitor:
         self.num_remaining_enemies_address = 0x91CFAB8B
         self._enemy_x_address_0 = 0x91CFDD84
         self._enemy_y_address_0 = 0x91CFDD8C
+        self._enemy_color_address_0 = 0x91CFDE6B
+        self._enemy_alive_address_0 = 0x91CFDE67
         self._dist_between_enemies = 6344
 
     def refresh(self) -> GameState:
@@ -75,15 +79,24 @@ class DolphinMemoryMonitor:
             g.num_remaining_enemies = num_remaining_enemies
 
             for i in range(num_starting_enemies):
-                x_pos_address = self._enemy_x_address_0 + (i * self._dist_between_enemies)
-                y_pos_address = self._enemy_y_address_0 + (i * self._dist_between_enemies)
+                e: Enemy = Enemy()
+                offset = i * self._dist_between_enemies
 
+                x_pos_address = self._enemy_x_address_0 + offset
+                y_pos_address = self._enemy_y_address_0 + offset
                 x_pos: float = self._api.read_float(x_pos_address)
                 y_pos: float = self._api.read_float(y_pos_address)
-
-                e: Enemy = Enemy()
                 e.x = x_pos
                 e.y = y_pos
+
+                color_address = self._enemy_color_address_0 + offset
+                color: int = self._api.read_byte(color_address)
+                e.color = color
+
+                alive_address =  self._enemy_alive_address_0 + offset
+                alive: bool = (self._api.read_byte(alive_address) > 0)
+                e.alive = alive
+
                 g.enemies.append(e)
 
             return g
