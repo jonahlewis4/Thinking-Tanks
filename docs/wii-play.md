@@ -65,4 +65,29 @@ adjacent walls
 91C1D813
 91C1DD77
 
-1380 appart from walls
+1380 apart from walls
+
+Bullet count limits:
+Player: 5
+Brown tank: 1
+Ash Tank: 1
+Marine: 1
+Pink: 3
+Yellow: 1
+Violet: 5
+Green: 2
+White: 5
+Black: 3
+
+
+AI_PARAMETER_SHEET info: 
+https://drive.google.com/file/d/1mSILvzJ-UFeAfQZyZZuL1_zOVu31JoPo/view
+Word 1 — Invisibilty flag
+Word 3 – Mine Count Limit
+Word 38 - Bullet speed
+Word 42 – Bullet Stun Timer
+
+1 block is 35.0 units by 35.0 units
+mine explosion is roughly 70.0 units
+map is 770.0 x 595.0 units on 16:9
+map is 560 x 595 units on 4:3
