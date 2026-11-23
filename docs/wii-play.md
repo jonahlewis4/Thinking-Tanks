@@ -91,3 +91,8 @@ Word 42 – Bullet Stun Timer
 mine explosion is roughly 70.0 units
 map is 770.0 x 595.0 units on 16:9
 map is 560 x 595 units on 4:3
+
+Scan ideas (from AI param sheet):
+mine explosion timer = 600 on lay, -1 per frame, jumps to 30 if tank in radius
+bullet moves Word 38 units/frame (player 3.0). ricochets left counter (player 1 -> 0 on bounce)
+watchpoint on tank's current bullet count to find bullet spawn code / pool
