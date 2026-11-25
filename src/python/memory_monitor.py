@@ -17,6 +17,12 @@ class Enemy(Tank):
     pass
 
 @dataclass
+class Bullet:
+    x: float = 0.0
+    y: float = 0.0
+    direction: float = 0.0
+
+@dataclass
 class GameState:
 
     lives: int = 0
@@ -25,6 +31,7 @@ class GameState:
     num_starting_enemies: int = 0
     num_remaining_enemies: int = 0
     enemies: list[Enemy] = field(default_factory=list)
+    bullets: list[Bullet] = field(default_factory=list)
     error: str | None = None
 
     def jsonify(self) -> str:
@@ -98,6 +105,12 @@ class DolphinMemoryMonitor:
                 e.alive = alive
 
                 g.enemies.append(e)
+
+            # TODO: read bullet data
+            #   - find base addresses for bullet 0 x, y, and direction
+            #   - find the stride (distance) between consecutive bullets
+            #   - find how many bullet slots exist / how to tell if a slot is active
+            #   - loop over active bullets, build Bullet(x, y, direction), append to g.bullets
 
             return g
         except Exception as e:

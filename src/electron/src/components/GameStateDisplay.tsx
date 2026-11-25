@@ -30,6 +30,12 @@ export interface Enemy extends Tank {
     alive?: boolean;
 }
 
+export interface Bullet {
+    x: number;
+    y: number;
+    direction: number;
+}
+
 export interface GameState {
     lives: number;
     level_number: number;
@@ -37,6 +43,7 @@ export interface GameState {
     num_starting_enemies: number;
     num_remaining_enemies: number;
     enemies: Enemy[];
+    bullets: Bullet[];
     error: string | null;
 }
 
